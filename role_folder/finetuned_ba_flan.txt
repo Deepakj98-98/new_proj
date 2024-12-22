@@ -1,0 +1,1 @@
+GET - Query the database. SELECT a record from the list. DELETE  Delete the record.
