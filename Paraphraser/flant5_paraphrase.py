@@ -11,10 +11,10 @@ model_name = "google/flan-t5-large"  # Choose "small", "base", "large", "xl", or
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 model1= SentenceTransformer('all-MiniLM-L6-v2')
-file_name = "pdf_text.txt"
+file_name = "transcription2.txt"
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
-df=pd.read_excel("C:\\Users\\Deepak J Bhat\\Downloads\\software_dev_keywords.xlsx")
+df=pd.read_excel("C:\\Users\\Deepak J Bhat\\Downloads\\management.xlsx")
 keywords= df["Keyword"].tolist()
 keyword_embeddings = model1.encode(keywords)
 
@@ -83,6 +83,6 @@ def video_audio_text(filepath):
 
 def transcripts_generate(filepath):
     text =video_audio_text(filepath)
-    with open("finetuned_ba_flan.txt","w") as file:
+    with open("finetuned_manager_flan.txt","w") as file:
         file.write(text)
 transcripts_generate("C:\\Users\\Deepak J Bhat\\Downloads\\video_file.mp4")
