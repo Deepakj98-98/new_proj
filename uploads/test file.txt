@@ -2,7 +2,7 @@ API Testing Basics Notes:
 
 End point: Address where API is hosted on the Server.
 
-HTTP methods which are commonly used to communicate with Rest APIï¿½s are
+HTTP methods which are commonly used to communicate with Rest API’s are
 GET, POST, PUT, and DELETE
 
 GET- The GET method is used to extract information from the given server using a given URI.

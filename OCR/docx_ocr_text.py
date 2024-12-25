@@ -46,14 +46,14 @@ def ocr_from_word_file(docx_path, output_dir):
     
     image_paths = extract_images_from_docx(docx_path, output_dir)
     doc = Document(docx_path)
-    if image_paths==[]:
+    if doc.paragraphs:
         fullText = []
         for para in doc.paragraphs:
             fullText.append(para.text)
-            ocr_results = '\n'.join(fullText)
-    else:
+            ocr_results += '\n'.join(fullText)
+    if image_paths:
         print("Performing OCR...")
-        ocr_results = perform_ocr_on_images(image_paths)
+        ocr_results += perform_ocr_on_images(image_paths)
     return ocr_results
 
 output_directory = "extracted_images"  # Directory to save extracted images

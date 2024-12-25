@@ -1,0 +1,1 @@
+You just need to know where to look. You would have products and customers and other things to keep track of like prices, sales units and a list of orders.
