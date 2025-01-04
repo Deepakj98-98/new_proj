@@ -2,6 +2,7 @@ import whisper
 from transformers import BartForConditionalGeneration, BartTokenizer
 import spacy
 import warnings
+import re
 
 class TranscriptProcessor:
     def __init__(self, spacy_model="en_core_web_sm", bart_model="facebook/bart-large-cnn", file_name="transcription2.txt"):
@@ -46,7 +47,14 @@ class TranscriptProcessor:
     def process_video_audio(self, filepath):
         """Transcribe and paraphrase text from video/audio."""
         text=self.transcribe(filepath)
-        return text
+        """
+        Perform basic text cleaning:
+        - Remove extra whitespaces, special characters, and multiple punctuation.
+        """
+        text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
+        text = re.sub(r'[^\w\s.,!?]', '', text)  # Remove special characters except basic punctuation
+        text = re.sub(r'([.,!?])\1+', r'\1', text)  # Reduce repeated punctuation (e.g., "!!!" to "!")
+        return text.strip()
         '''
         with open(self.file_name, "r") as file:
             text = file.read()

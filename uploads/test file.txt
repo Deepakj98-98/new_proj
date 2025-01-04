@@ -1,34 +1,72 @@
-API Testing Basics Notes:
+MediBuddy
 
-End point: Address where API is hosted on the Server.
+Customers name
+Jagadish G Bhat
 
-HTTP methods which are commonly used to communicate with Rest API’s are
-GET, POST, PUT, and DELETE
+PARTICULARS
 
-GET- The GET method is used to extract information from the given server using a given URI.
-While using GET request, it should only extract data and should have no other effect on the data.
-No Payload/Body required
+Erythrocyte Sedimentation Rate ESR  EDTA Whole
+Blood
 
-How to send input data in GET?
-Ans: Using Query Parameters
+Glucose Fasting FBS  Sodium Flouride
 
-POST- A POST request is used to send data to the server, for example, customer information,
-file upload, etc. using HTML forms.
+Glycosylated Hemoglobin HBA1c   EDTA Whole
+Blood
 
-How to send input data in POST?
-Ans: Using Form Parameters /Body Payload
+Glucose Post Prandial PPBS  Sodium Flouride
+Complete Urine Examination CUE  Spot Urine
 
-PUT- Replaces all current representations of the target resource with the uploaded content.
+CReactive Protein CRP  Serum
 
-DELETE- Removes all current representations of the target resource given by a URI.
+Complete Blood Count CBC with P.Smear  EDTA
+Whole Blood
 
-Resources:
-Resources represent API/Collection which can be accessed from the Server
+RECEIPT
 
-Google.com/maps
-google.com/search
-google.com/images
+Receipt number
+R455049501735086600
 
-Path Parameters:
-Path parameters are variable parts of a URL path. They are typically used to point to a specific
-resource within a collection, such as a user identified by ID
+Receipt date
+Dec 23 2024 0959 PM
+
+Date of Beneficiary Amount
+ServiceName Appointment name Qty 
+
+nvestigation 25Dec2024 600  Jagadish G 1 209
+Bhat
+
+nvestigation 25Dec2024 600  Jagadish G 1 200
+Bhat
+
+nvestigation  25Dec2024 600  Jagadish G 1 499
+Bhat
+
+nvestigation 25Dec2024 600 Jagadish G 1 239
+Bhat
+
+nvestigation 25Dec2024 600 Jagadish G 1 290
+Bhat
+
+nvestigation 25Dec2024 600 Jagadish G 1 499
+Bhat
+
+nvestigation 25Dec2024 600 Jagadish G 1 649
+Bhat
+
+Total Amount  2585
+
+Amount Paid by Corporate   2000
+
+Amount Paid   585
+
+Amount Paid  585
+
+Amount in words five hundred eightyfive
+
+PAN number AAHCP3193M GST number 29AAHCP3193M1ZR
+
+Phasorz Technologies Pvt. Ltd.
+CIN  U72300TN2013PTC092385
+Tower D 4th Floor IBC Knowledge Park 41 Bannerghatta Road Bangalore  560 029
+
+Note This is a computer generated Invoice does not require signature.

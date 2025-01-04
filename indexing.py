@@ -7,15 +7,15 @@ from sentence_transformers import SentenceTransformer, util
 from transformers import AutoTokenizer, AutoModel
 
 load_dotenv()
-model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
-
-qdrant_client = QdrantClient(
-    url=os.getenv("ENV_URL"), 
-    api_key=os.getenv("API_KEY"),
-)
-print("successful")
+class Indexing:
+    def __init__(self,model='sentence-transformers/all-mpnet-base-v2'):
+        self.model = SentenceTransformer()
+        qdrant_client = QdrantClient(
+        url=os.getenv("ENV_URL"), 
+        api_key=os.getenv("API_KEY"),
+        )
 #qdrant_client.create_collection(collection_name="{dissertation_collection}",vectors_config=models.VectorParams(size=100, distance=models.Distance.COSINE),)
-CHUNK_FOLDER="role_folder"
+CHUNK_FOLDER="Roles"
 texts=[]
 def chunk_files():
     global texts

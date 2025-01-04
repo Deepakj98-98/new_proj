@@ -5,6 +5,7 @@ import io
 import os
 import tempfile
 import shutil
+import re
 
 # Path to Tesseract OCR executable
 #pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
@@ -39,13 +40,14 @@ def perform_ocr_on_images(image_paths):
 
     return ocr_results
 
-# Main function to handle OCR for Word files
+# Function to extract text from word file
 def ocr_from_word_file(docx_path, output_dir):
     pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
     print("Extracting images...")
     
     image_paths = extract_images_from_docx(docx_path, output_dir)
     doc = Document(docx_path)
+    ocr_results=""
     if doc.paragraphs:
         fullText = []
         for para in doc.paragraphs:
@@ -65,6 +67,7 @@ def ocr_docx(filepath):
         file.write(ocr_texts)
     shutil.rmtree(output_directory)
     '''
-    return ocr_texts
+    cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', ocr_texts)
+    return cleaned_text
     # Print the OCR results
 

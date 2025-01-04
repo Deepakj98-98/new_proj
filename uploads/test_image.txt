@@ -1,0 +1,11 @@
+ One of very important software development phases
+
+ A software process based on welldefined software quality
+control and testing standards testing methods strategy test
+criteria and tools.
+
+ Engineers perform all types of software testing activities to
+perform a software test process.
+
+ The last quality checking point for software on its production
+line

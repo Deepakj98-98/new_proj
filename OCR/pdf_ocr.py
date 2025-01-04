@@ -4,6 +4,7 @@ import os
 import time
 import shutil
 from PIL import Image
+import re
 
 class Pdf_ocr:
   def __init__(self):
@@ -11,7 +12,7 @@ class Pdf_ocr:
     self.final_text=[]
     
    
-  
+  #Function to extract images form the given PDF
   def pdf_to_text(self, filepath):
     path_to_tesseract = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
     pytesseract.tesseract_cmd = path_to_tesseract
@@ -21,7 +22,7 @@ class Pdf_ocr:
     os.makedirs(output_dir, exist_ok=True)
     images = convert_from_path(pdf_path,poppler_path=pop_path, output_folder=output_dir, fmt='jpeg')
 
-    # Perform OCR and delete images after processing
+    # Funciton to perform OCR
     for image_file in os.listdir(output_dir):
         image_path = os.path.join(output_dir, image_file)
         with Image.open(image_path) as img:
@@ -29,14 +30,15 @@ class Pdf_ocr:
           self.final_text.append(text)
           img.close()
           return "".join(self.final_text)
-        #os.remove(image_path)
-    
+        
+  # function to return text and delete images after processing  
   def pdf_ocr_text(self,filepath):
     text=self.pdf_to_text(filepath)
-    #shutil.rmtree(output_dir)
-    return text
+    shutil.rmtree(self.output_dir)
+    #Removing special characters
+    cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', text)
+    return cleaned_text
     
     
-    #return text
 
   #pdf_ocr_text(r"C:\\Users\\Deepak J Bhat\\Downloads\\test file.pdf")

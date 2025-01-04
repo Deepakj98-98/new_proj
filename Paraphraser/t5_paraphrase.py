@@ -10,11 +10,11 @@ import pandas as pd
 class T5_small:
     def __init__(self,model="mrm8488/t5-small-finetuned-quora-for-paraphrasing", model1='all-MiniLM-L6-v2'):
         warnings.filterwarnings("ignore", category=FutureWarning)
+        self.threshold=0.3
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model)
         self.tokenizer = AutoTokenizer.from_pretrained(model,legacy=False)
         self.model1= SentenceTransformer(model1)
         self.file_name = None
-        #print(self.model.config)
         # Load spacy model
         self.nlp = spacy.load("en_core_web_sm")
         self.df=None
@@ -62,6 +62,7 @@ class T5_small:
         return paraphrase_sentences
 
     def keyword_sentence_similarity(self, sentence):
+        threshold=self.threshold
         sentence_embedding = self.model1.encode([sentence])
         
         
@@ -69,7 +70,7 @@ class T5_small:
         similarities = cosine_similarity(sentence_embedding, self.keyword_embeddings)
         
         # Check if the sentence is relevant to any keyword (similarity > threshold)
-        relevant_keywords = [self.keywords[i] for i in range(len(similarities[0])) if similarities[0][i] > 0.5]
+        relevant_keywords = [self.keywords[i] for i in range(len(similarities[0])) if similarities[0][i] > threshold]
         
         if relevant_keywords:
             print("returning")
@@ -77,7 +78,7 @@ class T5_small:
         else:
             return None
 
-    # Example usage
+    # Function to return paraphrased text from t5 small model
     def video_audio_text(self,filepath):
         text=""
         with open(self.file_name, "r") as file:
@@ -93,8 +94,18 @@ class T5_small:
             final_text.append(txt)
         return " ".join(final_text)
 
-    def transcripts_generate(self,filepath, excelPath):
+    def transcripts_generate(self,filepath,role,filter):
+        if filter.lower() == "high":
+            self.threshold=0.5
+        else:
+            self.threshold=0.3
         self.file_name=filepath
+        if role.lower()=="dev":
+            excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\software_dev_keywords.xlsx"
+        elif role.lower=="ba":
+            excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\Business_Analyst_Keywords.xlsx"
+        elif role.lower=="management":
+            excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\management.xlsx"
         self.df=pd.read_excel(excelPath)
         self.keywords= self.df["Keyword"].tolist()
         self.keyword_embeddings = self.model1.encode(self.keywords)

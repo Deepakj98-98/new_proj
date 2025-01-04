@@ -1,25 +1,22 @@
 import cv2
 import pytesseract
+import re
 
 class Image_text_ocr: 
-    # Read and preprocess the image
+    # Funciton to perform OCR for images
     def image_text(self, filepath):
         pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
         image = cv2.imread(filepath)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
 
-        # Save preprocessed image (optional)
-        #cv2.imwrite("processed_image.png", binary)
-
         # Perform OCR
         text = pytesseract.image_to_string(binary)
-        #with open("image_text","w") as file:
-        #    file.write(text)
-        return text
+        #Removing special characters
+        cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', text)
+        return cleaned_text
 
 
-#    image_text(None)
         
     '''
     from PIL import Image 
