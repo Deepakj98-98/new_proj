@@ -18,6 +18,7 @@ class T5_small:
         # Load spacy model
         self.nlp = spacy.load("en_core_web_sm")
         self.df=None
+        self.nlp.max_length = 2000000
         self.keywords= []
         self.keyword_embeddings = []
 
@@ -48,13 +49,21 @@ class T5_small:
         except:
             print("No paraphrase versions found")
             return input_text
+    
+    def split_text(self,text, max_length=1000000):
+        for i in range(0, len(text), max_length):
+            yield text[i:i + max_length]
 
     def split_into_sentences_spacy(self,text: str) -> list:
-        doc = self.nlp(text)
-        for sent in doc.sents:
-            print(sent.text)
-        
-        return [sent.text.strip() for sent in doc.sents]
+        bits=list(self.split_text(text))
+        texts=[]
+        for bit in bits:
+            doc = self.nlp(bit)
+            for sent in doc.sents:
+                texts.append(sent.text.strip())
+            #for sent in doc.sents:
+                #print(sent.text)
+        return texts
 
     def paraphrase_transcript(self,transcript):
         sentences=self.split_into_sentences_spacy(transcript)
@@ -102,9 +111,9 @@ class T5_small:
         self.file_name=filepath
         if role.lower()=="dev":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\software_dev_keywords.xlsx"
-        elif role.lower=="ba":
+        elif role.lower()=="ba":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\Business_Analyst_Keywords.xlsx"
-        elif role.lower=="management":
+        elif role.lower()=="management":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\management.xlsx"
         self.df=pd.read_excel(excelPath)
         self.keywords= self.df["Keyword"].tolist()

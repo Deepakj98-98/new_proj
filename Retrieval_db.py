@@ -3,6 +3,8 @@ from qdrant_client import QdrantClient, models
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from transformers import T5ForConditionalGeneration, T5Tokenizer, GenerationConfig
+import nltk
+from nltk.tokenize import sent_tokenize
 
 class DissertationQueryProcessor:
     def __init__(self):
@@ -30,9 +32,9 @@ class DissertationQueryProcessor:
 
         # Search in Qdrant
         results = self.qdrant_client.search(
-            collection_name="dissertation_collection2",
+            collection_name="dissertation_collection",
             query_vector=user_query,
-            limit=5,
+            limit=2,
             with_payload=True
         )
 
@@ -46,21 +48,28 @@ class DissertationQueryProcessor:
 
     def generate_answer(self, text):
         """Generate an answer for the given text using the summarization model."""
-        print(text)
-        inputs = self.tokenizer(text, return_tensors="pt", max_length=512, truncation=True)
-        generation_config = GenerationConfig(
-            max_length=200,
-            min_length=30,
-            length_penalty=2.0,
-            num_beams=4,
-            early_stopping=True
-        )
-        outputs = self.summarise_model.generate(
-            inputs["input_ids"],
-            generation_config=generation_config
-        )
-        result = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return result
+        sentences = sent_tokenize(text)  # Split text into sentences
+        summarized_sentences = []
+        
+        for sentence in sentences:
+            print(f"Processing sentence: {sentence}")
+            inputs = self.tokenizer(sentence, return_tensors="pt", max_length=512, truncation=True, padding=True)
+            generation_config = GenerationConfig(
+                max_length=50,
+                min_length=5,
+                length_penalty=2.0,
+                num_beams=4,
+                early_stopping=True
+            )
+            outputs = self.summarise_model.generate(
+                inputs["input_ids"],
+                generation_config=generation_config
+            )
+            summarized_sentence = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            summarized_sentences.append(summarized_sentence)
+        
+        # Combine summarized sentences into one text
+        return " ".join(summarized_sentences)
 
 
 if __name__ == "__main__":

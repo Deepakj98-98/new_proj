@@ -6,7 +6,7 @@ from langchain_text_splitters import SpacyTextSplitter
 from sentence_transformers import SentenceTransformer
 
 class QdrantChunking:
-    def __init__(self, chunk_folder="Roles", model_name="sentence-transformers/all-mpnet-base-v2", collection_name= "dissertation_collection2"):
+    def __init__(self, chunk_folder="Roles", model_name="sentence-transformers/all-mpnet-base-v2", collection_name= "dissertation_collection3"):
         load_dotenv()
         self.chunk_folder = chunk_folder
         self.collection_name = collection_name
@@ -17,6 +17,8 @@ class QdrantChunking:
             api_key=os.getenv("API_KEY"),
         )
         print("Qdrant client initialized successfully.")
+        
+    def create_collection_qdrant(self):
         try:
             self.qdrant_client.create_collection(
                 collection_name=self.collection_name,
@@ -29,6 +31,7 @@ class QdrantChunking:
     def chunk_files(self):
         """Read and split text files into smaller chunks."""
         self.texts = []
+        self.create_collection_qdrant()
         filepaths = os.listdir(self.chunk_folder)
         print("Files found:", filepaths)
 

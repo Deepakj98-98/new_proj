@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify,send_from_directory
 import os
 from OCR.pdf_ocr import Pdf_ocr
 from OCR.image_text import Image_text_ocr
@@ -46,7 +46,10 @@ class FileProcessor:
             elif extension == ".docx":
                 text = ocr_docx(file)
             elif extension == ".pdf":
+                print("inside pdf")
+                print(file)
                 text = self.pdf_ocr.pdf_ocr_text(file)
+                print("done")
             elif extension in [".png", ".jpg", ".jpeg"]:
                 text = self.image_ocr.image_text(file)
             else:
@@ -134,6 +137,19 @@ def download_file(filename):
         flash("File not found!", "error")
         return redirect(url_for("home"))
 
+@app.route("/view/<filename>")
+def view_file(filename):
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    if os.path.exists(file_path):
+        print("inside")
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    else:
+        file_path=os.path.join(ROLE_FOLDER, filename)
+        if os.path.exists(file_path):
+            print("inside")
+            return send_from_directory(ROLE_FOLDER, filename)
+
+
 @app.route('/chatbot')
 def chatbot():
     return render_template('chatbot.html')
@@ -154,6 +170,41 @@ def chatbot_query():
         return jsonify({"error": str(e)}), 500
   # Chatbot page
 
+def clear_files():
+    directories=["Roles","uploads"]
+    set=False
+    for directory in directories:
+        try:
+            set=True
+            if not os.path.exists(directory):
+                print(f"Directory {directory} path is incorrect or does not exist")
+                set=False
+            if not os.path.isdir(directory):
+                print(f"Directory {directory} is not a directory")
+                set=False
+            for file in os.listdir(directory):
+                print(file)
+                file_path=os.path.join(directory,file)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+                else:
+                    print(f"Skipping {file_path} for deletion")
+            set=True
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            set= False
+    if set==True:
+        return True
+    else:
+        return False
+
+@app.route("/clear")
+def delete_all_files():
+    success=clear_files()
+    if success:
+        return redirect(url_for("home"))
+    else:
+        return "Failed to delete Files",500
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,8 +1,12 @@
 import whisper
 from transformers import BartForConditionalGeneration, BartTokenizer
+from pydub import AudioSegment
+from pydub.utils import make_chunks
 import spacy
 import warnings
 import re
+import os
+import shutil
 
 class TranscriptProcessor:
     def __init__(self, spacy_model="en_core_web_sm", bart_model="facebook/bart-large-cnn", file_name="transcription2.txt"):
@@ -14,11 +18,20 @@ class TranscriptProcessor:
         self.whisper_model = whisper.load_model("base")
 
     def transcribe(self, filepath):
-        """Transcribe audio from the provided filepath."""
-        result = self.whisper_model.transcribe(filepath)
-        with open(self.file_name, "w") as file:
-            file.write(result["text"])
-        return result["text"]
+        """raw speech- text conversion from given file-path."""
+        
+        audio =AudioSegment.from_file(filepath)
+        chunks=make_chunks(audio,30000)
+        chunk_dir="Chunks"
+        os.makedirs(chunk_dir,exist_ok=True)
+        last_transcirpt=""
+        for i, chunk in enumerate(chunks):
+            chunk_filename=os.path.join(chunk_dir,f"chunk_{i}.wav")
+            chunk.export(chunk_filename,format="wav")
+            result = self.whisper_model.transcribe(chunk_filename)
+            last_transcirpt+=result["text"]+" "
+        shutil.rmtree(chunk_dir)
+        return last_transcirpt.strip()
 
     def paraphrase_text(self, input_text: str, num_beams=2, num_return_sequences=1) -> list:
         """Paraphrase the given input text."""
@@ -70,6 +83,6 @@ class TranscriptProcessor:
 
 # Example usage from another file:
 # from transcript_processor import TranscriptProcessor
-# processor = TranscriptProcessor()
-# transcript = processor.generate_transcripts("path/to/video_file.mp4")
+#processor = TranscriptProcessor()
+#processor.process_video_audio("C:\\Users\\Deepak J Bhat\\Downloads\\container.mp4")
 # print(transcript)

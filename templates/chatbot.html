@@ -6,27 +6,44 @@
     <title>Chatbot Interface</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
+        body {
+            background: url('/static/images/Background.png') no-repeat center center fixed; /* Specify the image */
+            background-size: cover; /* Ensure the image covers the entire background */
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
         .chat-container {
             width: 100%;
             max-width: 600px;
             margin: 50px auto;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
         }
 
         .chat-box {
             height: 400px;
             overflow-y: auto;
+            background: #f1f1f1;
+            border-radius: 10px;
+            padding: 15px;
             border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .chat-message {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .chat-message.user {
@@ -37,22 +54,46 @@
             background-color: #007bff;
             color: white;
             display: inline-block;
-            padding: 8px 15px;
-            border-radius: 15px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+            word-wrap: break-word;
         }
 
         .chat-message.bot .message {
-            background-color: #f1f1f1;
+            background-color: #e9ecef;
+            color: #333;
             display: inline-block;
-            padding: 8px 15px;
-            border-radius: 15px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .input-group {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            border-radius: 20px 0 0 20px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-primary {
+            border-radius: 0 20px 20px 0;
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="chat-container">
-            <h4 class="text-center">Smart Skill Support Chatbot</h4>
+            <div class="chat-header">Smart Skill Support Chatbot</div>
             <div class="chat-box" id="chat-box">
                 <!-- Chat messages will appear here -->
             </div>

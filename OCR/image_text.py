@@ -8,7 +8,15 @@ class Image_text_ocr:
         pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
         image = cv2.imread(filepath)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        _, binary = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+       
+        # Increase contrast using histogram equalization
+        enhanced = cv2.equalizeHist(gray)
+        
+        # Code to reduce background noise
+        blurred = cv2.GaussianBlur(enhanced, (5, 5), 0)
+        
+        # Apply thresholding
+        _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
         # Perform OCR
         text = pytesseract.image_to_string(binary)
@@ -16,9 +24,14 @@ class Image_text_ocr:
         cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', text)
         return cleaned_text
 
+''' 
+ocr = Image_text_ocr()
+text_output = ocr.image_text("C:\\Users\\Deepak J Bhat\\new_proj\\uploads\\Image_SSS.png")
+print("Extracted Text:\n", text_output)
+'''
 
         
-    '''
+'''
     from PIL import Image 
     from pytesseract import pytesseract 
     def image_text(filepath): 

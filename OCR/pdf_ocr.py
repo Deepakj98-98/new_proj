@@ -8,12 +8,13 @@ import re
 
 class Pdf_ocr:
   def __init__(self):
-    self.output_dir="frames"
+    #self.output_dir="frames"
     self.final_text=[]
     
    
   #Function to extract images form the given PDF
   def pdf_to_text(self, filepath):
+    self.final_text=[]
     path_to_tesseract = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
     pytesseract.tesseract_cmd = path_to_tesseract
     pdf_path = filepath
@@ -29,14 +30,14 @@ class Pdf_ocr:
           text = pytesseract.image_to_string(img)
           self.final_text.append(text)
           img.close()
-          return "".join(self.final_text)
+    return "".join(self.final_text)
         
   # function to return text and delete images after processing  
   def pdf_ocr_text(self,filepath):
     text=self.pdf_to_text(filepath)
-    shutil.rmtree(self.output_dir)
+    shutil.rmtree("frames")
     #Removing special characters
-    cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', text)
+    cleaned_text = re.sub(r'[^A-Za-z0-9\s.,]', '', text)
     return cleaned_text
     
     

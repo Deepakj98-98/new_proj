@@ -18,7 +18,7 @@ class T5_flan_praraphrase:
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.model1= SentenceTransformer(model1)
         self.file_name = None
-        # Load spaCy model
+        # Load spacy model
         self.nlp = spacy.load("en_core_web_sm")
         self.df=None
         self.keywords= []
@@ -97,9 +97,9 @@ class T5_flan_praraphrase:
         self.file_name=filepath
         if role.lower()=="dev":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\software_dev_keywords.xlsx"
-        elif role.lower=="ba":
+        elif role.lower()=="ba":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\Business_Analyst_Keywords.xlsx"
-        elif role.lower=="management":
+        elif role.lower()=="management":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\management.xlsx"
         self.df=pd.read_excel(excelPath)
         self.keywords= self.df["Keyword"].tolist()

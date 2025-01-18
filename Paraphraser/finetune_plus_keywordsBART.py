@@ -93,9 +93,10 @@ class BARTFinetune_keywords:
         self.file_name=filepath
         if role.lower()=="dev":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\software_dev_keywords.xlsx"
-        elif role.lower=="ba":
+        elif role.lower()=="ba":
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\Business_Analyst_Keywords.xlsx"
-        elif role.lower=="management":
+        elif role.lower()=="management":
+            print("here inside management")
             excelPath="C:\\Users\\Deepak J Bhat\\Downloads\\management.xlsx"
         self.df=pd.read_excel(excelPath)
         self.keywords= self.df["Keyword"].tolist()
