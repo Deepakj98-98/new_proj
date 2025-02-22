@@ -22,7 +22,8 @@ class Image_text_ocr:
         text = pytesseract.image_to_string(binary)
         #Removing special characters
         cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', text)
-        return cleaned_text
+        cleaned_text1 = re.sub(r'[^\x20-\x7E\n]', '', cleaned_text)
+        return cleaned_text1
 
 ''' 
 ocr = Image_text_ocr()

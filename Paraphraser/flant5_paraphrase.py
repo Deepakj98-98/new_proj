@@ -20,6 +20,7 @@ class T5_flan_praraphrase:
         self.file_name = None
         # Load spacy model
         self.nlp = spacy.load("en_core_web_sm")
+        self.nlp.max_length=200000
         self.df=None
         self.keywords= []
         self.keyword_embeddings = []
@@ -47,9 +48,20 @@ class T5_flan_praraphrase:
         paraphrased_texts = [self.tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
         return paraphrased_texts
 
-    def split_into_sentences_spacy(self, text: str) -> list:
-        doc = self.nlp(text)
-        return [sent.text.strip() for sent in doc.sents]
+    def split_text(self,text, max_length=1000000):
+        for i in range(0, len(text), max_length):
+            yield text[i:i + max_length]
+
+    def split_into_sentences_spacy(self,text: str) -> list:
+        bits=list(self.split_text(text))
+        texts=[]
+        for bit in bits:
+            doc = self.nlp(bit)
+            for sent in doc.sents:
+                texts.append(sent.text.strip())
+            #for sent in doc.sents:
+                #print(sent.text)
+        return texts
 
     def paraphrase_transcript(self,transcript):
         sentences=self.split_into_sentences_spacy(transcript)

@@ -45,17 +45,22 @@ def ocr_from_word_file(docx_path, output_dir):
     pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
     print("Extracting images...")
     
-    image_paths = extract_images_from_docx(docx_path, output_dir)
+    #image_paths = extract_images_from_docx(docx_path, output_dir)
     doc = Document(docx_path)
     ocr_results=""
-    if doc.paragraphs:
+    if doc.paragraphs: 
+        print("in here")
         fullText = []
         for para in doc.paragraphs:
+            print("printing para")
+            #print(para.text)
             fullText.append(para.text)
-            ocr_results += '\n'.join(fullText)
+        ocr_results += '\n'.join(fullText)
+    '''
     if image_paths:
         print("Performing OCR...")
         ocr_results += perform_ocr_on_images(image_paths)
+    '''
     return ocr_results
 
 output_directory = "extracted_images"  # Directory to save extracted images
@@ -67,7 +72,16 @@ def ocr_docx(filepath):
         file.write(ocr_texts)
     shutil.rmtree(output_directory)
     '''
+    #print(ocr_texts)
     cleaned_text = re.sub(r'[^A-Za-z0-9\s.]', '', ocr_texts)
-    return cleaned_text
+    text = re.sub(r'[^\w\s.,!?]', '', cleaned_text)
+    cleaned_text1 = re.sub(r'[^\x20-\x7E\n]', '', text)
+    return cleaned_text1
     # Print the OCR results
+
+'''
+word_ocr=ocr_docx("C:\\Users\\Deepak J Bhat\\Downloads\\newdoc.docx")
+with open("ocr_text_word","w",encoding="utf-8") as file:
+    file .write(word_ocr)
+'''
 

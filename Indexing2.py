@@ -6,7 +6,7 @@ from langchain_text_splitters import SpacyTextSplitter
 from sentence_transformers import SentenceTransformer
 
 class QdrantChunking:
-    def __init__(self, chunk_folder="Roles", model_name="sentence-transformers/all-mpnet-base-v2", collection_name= "dissertation_collection3"):
+    def __init__(self, chunk_folder="Roles", model_name="sentence-transformers/all-mpnet-base-v2", collection_name= "dissertation_collection6"):
         load_dotenv()
         self.chunk_folder = chunk_folder
         self.collection_name = collection_name
@@ -29,7 +29,7 @@ class QdrantChunking:
             print(f"Error while creating collection (it may already exist): {e}")
 
     def chunk_files(self):
-        """Read and split text files into smaller chunks."""
+        #Read and split text files into smaller chunks.
         self.texts = []
         self.create_collection_qdrant()
         filepaths = os.listdir(self.chunk_folder)
@@ -49,12 +49,12 @@ class QdrantChunking:
         self.into_vectors_db()
 
     def get_embeddings_data(self, data_chunks):
-        """Generate embeddings for the given chunks."""
+        #Generate embeddings for the given chunks.
         data_embeddings = [self.model.encode(data) for data in data_chunks]
         return data_embeddings
 
     def into_vectors_db(self):
-        """Store the text chunks and their embeddings into Qdrant."""
+        #Upsert the text chunks and their embeddings into Qdrant.
         data_embeddings = self.get_embeddings_data(self.texts)
         print(f"Number of chunks to insert: {len(self.texts)}")
 
@@ -87,12 +87,3 @@ class QdrantChunking:
 
         print("Data successfully inserted into Qdrant.")
         self.qdrant_client.close()
-'''
-if __name__ == "__main__":
-    chunk_folder = "Roles"  # Replace with your folder path
-    model_name = "sentence-transformers/all-mpnet-base-v2"
-    collection_name = "dissertation_collection2"
-
-    qdrant_chunking = QdrantChunking(chunk_folder, model_name, collection_name)
-    qdrant_chunking.chunk_files()
-''' 

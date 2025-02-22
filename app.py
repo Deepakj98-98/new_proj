@@ -9,6 +9,7 @@ from Paraphraser.flant5_paraphrase import T5_flan_praraphrase
 from Paraphraser.t5_paraphrase import T5_small
 from Indexing2 import QdrantChunking
 from Retrieval_db import DissertationQueryProcessor
+import speech_recognition as sr
 
 class FileProcessor:
     def __init__(self, upload_folder):
@@ -80,7 +81,7 @@ class FileProcessor:
         filename_without_ext = os.path.splitext(base_name)[0]
         text_file = f"{filename_without_ext}.txt"
         text_path = os.path.join(self.upload_folder, text_file)
-        with open(text_path, "w") as f:
+        with open(text_path, "w",encoding="utf-8") as f:
             f.write(text)
     
     def _save_pp_file(self, original_file, text):
@@ -88,7 +89,7 @@ class FileProcessor:
         filename_without_ext = os.path.splitext(base_name)[0]+"pp"
         text_file = f"{filename_without_ext}.txt"
         text_path = os.path.join(self.role_folder, text_file)
-        with open(text_path, "w") as f:
+        with open(text_path, "w",encoding="utf-8") as f:
             f.write(text)
 
 # Flask App
@@ -99,6 +100,7 @@ ROLE_FOLDER="Roles"
 file_processor = FileProcessor(UPLOAD_FOLDER)
 qdrant_chunking = QdrantChunking()
 query_processor=DissertationQueryProcessor()
+r = sr.Recognizer()
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -205,6 +207,30 @@ def delete_all_files():
         return redirect(url_for("home"))
     else:
         return "Failed to delete Files",500
+    
+@app.route('/chatbot/voice', methods=['POST'])
+def voice_input():
+    try:
+        # Use the microphone as input
+        with sr.Microphone() as source2:
+            r.adjust_for_ambient_noise(source2, duration=0.2)
+            print("Listening for voice input...")
+            audio2 = r.listen(source2)
+
+            # Convert speech to text
+            MyText = r.recognize_google(audio2).lower()
+            print(f"Recognized: {MyText}")
+
+            if MyText == "exit":
+                return jsonify({'transcription': '', 'message': 'Exit command received'})
+
+            return jsonify({'transcription': MyText})
+
+    except sr.RequestError:
+        return jsonify({'error': 'Speech Recognition API unavailable'}), 500
+    except sr.UnknownValueError:
+        return jsonify({'error': 'Could not understand audio'}), 400
+
 
 if __name__ == "__main__":
     app.run(debug=True)

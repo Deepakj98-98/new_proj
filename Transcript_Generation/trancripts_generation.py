@@ -65,7 +65,7 @@ class TranscriptProcessor:
         - Remove extra whitespaces, special characters, and multiple punctuation.
         """
         text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with a single space
-        text = re.sub(r'[^\w\s.,!?]', '', text)  # Remove special characters except basic punctuation
+        text = re.sub(r'[^\w\s,!?]', '', text)  # Remove special characters except basic punctuation
         text = re.sub(r'([.,!?])\1+', r'\1', text)  # Reduce repeated punctuation (e.g., "!!!" to "!")
         return text.strip()
         '''

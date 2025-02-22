@@ -32,13 +32,14 @@ class Pdf_ocr:
           img.close()
     return "".join(self.final_text)
         
-  # function to return text and delete images after processing  
+  # function to return text and delete image directory after processing  
   def pdf_ocr_text(self,filepath):
     text=self.pdf_to_text(filepath)
     shutil.rmtree("frames")
     #Removing special characters
     cleaned_text = re.sub(r'[^A-Za-z0-9\s.,]', '', text)
-    return cleaned_text
+    cleaned_text1 = re.sub(r'[^\x20-\x7E\n]', '', cleaned_text)
+    return cleaned_text1
     
     
 

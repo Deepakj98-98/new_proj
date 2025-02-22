@@ -100,6 +100,7 @@
             <form id="chat-form">
                 <div class="input-group">
                     <input type="text" id="user-input" class="form-control" placeholder="Type your message...">
+                    <button type="button" class="btn btn-secondary" id="voice-btn">🎤</button>
                     <button type="submit" class="btn btn-primary">Send</button>
                 </div>
             </form>
@@ -107,6 +108,21 @@
     </div>
 
     <script>
+        document.getElementById('voice-btn').addEventListener('click', async function () {
+        try {
+            const response = await fetch('/chatbot/voice', { method: 'POST' });
+            const result = await response.json();
+
+            if (result.transcription) {
+                document.getElementById('user-input').value = result.transcription;
+            } else {
+                alert("Could not recognize speech. Try again.");
+            }
+        } catch (error) {
+            console.error('Error fetching voice input:', error);
+        }
+    });
+    
         document.getElementById('chat-form').addEventListener('submit', async function (event) {
             event.preventDefault();
 
