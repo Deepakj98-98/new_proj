@@ -39,7 +39,7 @@ class DissertationQueryProcessor:
 
         # Search in Qdrant
         results = self.qdrant_client.search(
-            collection_name="dissertation_collection5",
+            collection_name="dissertation_collection6",
             query_vector=user_query,
             limit=3,
             with_payload=True
