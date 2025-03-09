@@ -97,6 +97,14 @@
             <div class="chat-box" id="chat-box">
                 <!-- Chat messages will appear here -->
             </div>
+            <div class="form-group">
+                <label for="role" class="form-label">Choose a role:</label>
+                <select name="role" id="role" class="form-control">
+                    <option value="dev">Developer</option>
+                    <option value="ba">Business Analyst</option>
+                    <option value="management">Management/Leadership</option>
+                </select>
+            </div>
             <form id="chat-form">
                 <div class="input-group">
                     <input type="text" id="user-input" class="form-control" placeholder="Type your message...">
@@ -127,6 +135,7 @@
             event.preventDefault();
 
             const userInput = document.getElementById('user-input').value.trim();
+            const role= document.getElementById('role').value.trim();
             if (!userInput) return;
 
             const chatBox = document.getElementById('chat-box');
@@ -147,7 +156,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ user_input: userInput })
+                    body: JSON.stringify({ user_input: userInput, role:role })
                 });
 
                 const result = await response.json();

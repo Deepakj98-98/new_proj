@@ -14,7 +14,6 @@ import speech_recognition as sr
 class FileProcessor:
     def __init__(self, upload_folder):
         self.upload_folder = upload_folder
-        self.role_folder="Roles"
         os.makedirs(self.upload_folder, exist_ok=True)
         print("Now OCR")
         self.pdf_ocr=Pdf_ocr()
@@ -73,7 +72,7 @@ class FileProcessor:
                 text=self.t5_small.transcripts_generate(file1,role,filter)
             else:
                 continue
-            self._save_pp_file(file,text)
+            self._save_pp_file(file,role,text)
 
 
     def _save_text_file(self, original_file, text):
@@ -84,20 +83,33 @@ class FileProcessor:
         with open(text_path, "w",encoding="utf-8") as f:
             f.write(text)
     
-    def _save_pp_file(self, original_file, text):
+    def _save_pp_file(self, original_file,role, text):
         base_name = os.path.basename(original_file)
         filename_without_ext = os.path.splitext(base_name)[0]+"pp"
-        text_file = f"{filename_without_ext}.txt"
-        text_path = os.path.join(self.role_folder, text_file)
-        with open(text_path, "w",encoding="utf-8") as f:
-            f.write(text)
+        text_file = f"{filename_without_ext+role}.txt"
+        if role=="dev":
+             os.makedirs(role, exist_ok=True)
+             text_path = os.path.join(role, text_file)
+             with open(text_path, "w",encoding="utf-8") as f:
+                f.write(text)
+        if role=="ba":
+            os.makedirs(role, exist_ok=True)
+            text_path = os.path.join(role, text_file)
+            with open(text_path, "w",encoding="utf-8") as f:
+                f.write(text)
+        if role=="management":
+            os.makedirs(role, exist_ok=True)
+            text_path = os.path.join(role, text_file)
+            with open(text_path, "w",encoding="utf-8") as f:
+                f.write(text)
+
 
 # Flask App
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-UPLOAD_FOLDER = "uploads"
-ROLE_FOLDER="Roles"
-file_processor = FileProcessor(UPLOAD_FOLDER)
+UPLOAD_FOLDER = ["uploads"]
+ROLE_FOLDER=["ba","dev","management"]
+file_processor = FileProcessor(UPLOAD_FOLDER[0])
 qdrant_chunking = QdrantChunking()
 query_processor=DissertationQueryProcessor()
 r = sr.Recognizer()
@@ -106,7 +118,8 @@ r = sr.Recognizer()
 def home():
     if request.method == "POST":
         files = request.files.getlist("files")
-        role=request.form.get("role")
+        #role=request.form.get("role")
+        role=["dev","ba","management"]
         print(role)
         model=request.form.get("models")
         print("model")
@@ -116,40 +129,53 @@ def home():
         uploaded_file_paths = file_processor.save_files(files)
         if uploaded_file_paths:
             file_processor.process_files(uploaded_file_paths)
-            file_processor.role_based_file(uploaded_file_paths,role, model, filter)
-            flash("Files uploaded and processed successfully!", "success")
-        qdrant_chunking.chunk_files()
+            for i in role:
+                file_processor.role_based_file(uploaded_file_paths,i, model, filter)
+                flash("Files uploaded and processed successfully!", "success")
+                qdrant_chunking.chunk_files(i+"dissertation_collection",i)
         return redirect(url_for("home"))
     #return render_template('index.html')
     # List all transcript files
     folders=[ROLE_FOLDER, UPLOAD_FOLDER]
     transcript_files=[]
     for folder in folders:
-        transcript_files.extend( [
-        f for f in os.listdir(folder) if f.endswith(".txt")
-    ])
+        for i in folder:
+            transcript_files.extend( [
+            f for f in os.listdir(i) if f.endswith(".txt")
+            ])
     return render_template('index.html', transcript_files=transcript_files)
 
 @app.route("/download/<filename>")
 def download_file(filename):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    if os.path.exists(file_path):
-        return send_file(file_path, as_attachment=True)
-    else:
-        flash("File not found!", "error")
-        return redirect(url_for("home"))
+    for folder in UPLOAD_FOLDER:
+        file_path = os.path.join(folder, filename)
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)
+    
+    for folder in ROLE_FOLDER:
+        file_path = os.path.join(folder, filename)
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)
+    
+    flash("File not found!", "error")
+    return redirect(url_for("home"))
 
 @app.route("/view/<filename>")
 def view_file(filename):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    if os.path.exists(file_path):
-        print("inside")
-        return send_from_directory(UPLOAD_FOLDER, filename)
-    else:
-        file_path=os.path.join(ROLE_FOLDER, filename)
+    # Search for the file in UPLOAD_FOLDERS
+    for folder in UPLOAD_FOLDER:
+        file_path = os.path.join(folder, filename)
         if os.path.exists(file_path):
-            print("inside")
-            return send_from_directory(ROLE_FOLDER, filename)
+            return send_from_directory(folder, filename)
+    
+    # Search for the file in ROLE_FOLDERS
+    for folder in ROLE_FOLDER:
+        file_path = os.path.join(folder, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(folder, filename)
+
+    flash("File not found!", "error")
+    return redirect(url_for("home"))
 
 
 @app.route('/chatbot')
@@ -160,12 +186,14 @@ def chatbot():
 def chatbot_query():
     try:
         # Get user input from the frontend
+        role=request.json.get("role")
         user_input = request.json.get("user_input")
+        print(f"role is {role}")
         if not user_input:
             return jsonify({"error": "Invalid input"}), 400
 
         # Process user query through DissertationQueryProcessor
-        response = query_processor.query_and_store(user_input)
+        response = query_processor.query_and_store(user_input,role)
 
         return jsonify({"response": response}), 200
     except Exception as e:
@@ -173,7 +201,7 @@ def chatbot_query():
   # Chatbot page
 
 def clear_files():
-    directories=["Roles","uploads"]
+    directories=["ba","uploads","dev","management"]
     set=False
     for directory in directories:
         try:

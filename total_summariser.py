@@ -36,23 +36,25 @@ class total_summarise:
 
         
     
-    def generate_summary(self,prompt, max_length=300):
-        inputs = self.tokenizer(prompt, return_tensors="pt", max_length=1024, truncation=True)
+    def generate_summary(self,text, max_length=10):
+        inputs = self.tokenizer(text, return_tensors="pt", max_length=100, truncation=True)
         outputs = self.model.generate(inputs.input_ids, max_length=max_length, num_return_sequences=1)
         return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     
     def summarise_data(self, text):
-        prompt=f"Summarise the following text and generate meaningful summaries: {text}"
+        
         #print(len(text))
-        return self.generate_summary(prompt)
+        return self.generate_summary(text)
     
     
 cc=total_summarise()
-summary=cc.get_all_data_and_summarise()
+summary=cc.summarise_data("document bills issue")
+print(summary)
+'''
 with open("summary.txt","w") as file:
     file.write(summary)
-
+'''
 
         
 

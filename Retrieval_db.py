@@ -30,16 +30,23 @@ class DissertationQueryProcessor:
         return self.tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 
-    def query_and_store(self, text):
+    def query_and_store(self, text, role):
         #Query Qdrant and generate an answer based on relevant chunks.
         #print(f"Processing: {text}")
         payload = {"source": "user_query"}
         text1=self.reformulate_query(text)
         user_query = self.generate_emb(text1)
-
+        collection_name=""
+        if role=="dev":
+            collection_name+="devdissertation_collection"
+        if role=="ba":
+            collection_name+="badissertation_collection"
+        if role=="management":
+            collection_name+="managementdissertation_collection"
+        print(collection_name)
         # Search in Qdrant
         results = self.qdrant_client.search(
-            collection_name="dissertation_collection6",
+            collection_name=collection_name,
             query_vector=user_query,
             limit=3,
             with_payload=True
@@ -55,27 +62,7 @@ class DissertationQueryProcessor:
         answer = self.generate_answer(combined_text)
     
         return answer
-    '''
-    def generate_answer_new(self, text):
-        """Generate an answer for the given text using the summarization model."""
 
-        inputs = self.tokenizer(text, return_tensors="pt", max_length=512, truncation=True, padding=True)
-        generation_config = GenerationConfig(
-            max_length=100,
-            min_length=10,
-            length_penalty=1.0,
-            num_beams=6,
-            early_stopping=True
-        )
-        outputs = self.summarise_model.generate(
-            inputs["input_ids"],
-            generation_config=generation_config
-        )
-        summarized_sentence = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-        # Combine summarized sentences into one text
-        return summarized_sentence
-'''
     def generate_answer(self, text):
         #Generate an answer for the given text using the summarization model.
         sentences = sent_tokenize(text)  # Split text into sentences
@@ -85,7 +72,7 @@ class DissertationQueryProcessor:
             print(f"Processing sentence: {sentence}")
             inputs = self.tokenizer(sentence, return_tensors="pt", max_length=512, truncation=True, padding=True)
             generation_config = GenerationConfig(
-                max_length=100,
+                max_length=150,
                 min_length=10,
                 length_penalty=1.0,
                 num_beams=6,
